@@ -1,4 +1,4 @@
-# gitignore created on 01/13/26 at 23:38
+# gitignore created on 01/21/26 at 17:09
 # Disable reminder in prompt
 ignoredirmessage
 
@@ -101,4 +101,23 @@ $RECYCLE.BIN/
 # ignore work in progress files
 **/*.rewrite.sh
 **/*.refactor.sh
+
+# ignore dotenv files
+.env
+
+# Ignore the file: app.env
+app.env
+
+# ignore the default dotenv file
+default.env
+
+# Ignore the file: compose.default.yaml
+compose.default.yaml
+
+# Exclude compose.yaml just in case it has sensitive data
+compose.yml
+compose.yaml
+
+# Exclude the rootfs dir
+rootfs
 
