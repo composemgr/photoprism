@@ -57,10 +57,10 @@ See `docker-compose.yaml` for complete list of configurable options.
 
 ## 📂 Volumes
 
-- `./rootfs/data/photoprism/originals` - Data storage
-- `./rootfs/data/photoprism/storage` - Data storage
-- `./rootfs/data/photoprism/import` - Data storage
-- `./rootfs/data/db/mariadb/photoprism` - Data storage
+- `./volumes/data/photoprism/originals` - Data storage
+- `./volumes/data/photoprism/storage` - Data storage
+- `./volumes/data/photoprism/import` - Data storage
+- `./volumes/data/db/mariadb/photoprism` - Data storage
 
 ## 🔐 Security
 
