@@ -39,9 +39,9 @@ services:
       PHOTOPRISM_SMTP_PASSWORD: ${EMAIL_SERVER_LOGIN_PASS:-}
       PHOTOPRISM_SMTP_FROM: photoprism@${BASE_DOMAIN_NAME:-${BASE_HOST_NAME:-localhost}}
     volumes:
-      - ./rootfs/data/photoprism/originals:/photoprism/originals
-      - ./rootfs/data/photoprism/storage:/photoprism/storage
-      - ./rootfs/data/photoprism/import:/photoprism/import
+      - ./volumes/data/photoprism/originals:/photoprism/originals
+      - ./volumes/data/photoprism/storage:/photoprism/storage
+      - ./volumes/data/photoprism/import:/photoprism/import
     depends_on:
       - photoprism-db
     healthcheck:
@@ -66,7 +66,7 @@ services:
       MARIADB_PASSWORD: ${DB_USER_PASS:-changeme_db_password}
       MARIADB_ROOT_PASSWORD: ${DB_ADMIN_PASS:-changeme_root_password}
     volumes:
-      - ./rootfs/data/db/mariadb/photoprism:/var/lib/mysql
+      - ./volumes/data/db/mariadb/photoprism:/var/lib/mysql
     command: --innodb-buffer-pool-size=512M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
