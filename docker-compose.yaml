@@ -16,6 +16,8 @@ services:
     logging: *default-logging
     networks:
       - photoprism
+      - proxy
+      - cloudflare
     ports:
       - "172.17.0.1:2342:2342"
     environment:
@@ -40,6 +42,8 @@ services:
       PHOTOPRISM_SMTP_USERNAME: ${EMAIL_SERVER_LOGIN_NAME:-}
       PHOTOPRISM_SMTP_PASSWORD: ${EMAIL_SERVER_LOGIN_PASS:-}
       PHOTOPRISM_SMTP_FROM: ${EMAIL_SERVER_MAIL_FROM:-photoprism@example.com}
+      CONTAINER_NAME: photoprism-app
+      HOSTNAME: ${BASE_HOST_NAME:-$HOSTNAME}
     volumes:
       - ./volumes/data/photoprism/originals:/photoprism/originals
       - ./volumes/data/photoprism/storage:/photoprism/storage
@@ -51,6 +55,22 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    labels:
+      - 'traefik.enable=true'
+      - 'cloudflare.enable=true'
+      - 'traefik.docker.network=proxy'
+      - 'cloudflare.service=http://photoprism-app:2342'
+      - 'cloudflare.hostname=photoprism.${CLOUDFLARE_ZONE_NAME:-}'
+      - 'traefik.http.routers.photoprism-app.entrypoints=http'
+      - 'traefik.http.routers.photoprism-app-secure.tls=true'
+      - 'traefik.http.routers.photoprism-app.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.middlewares.photoprism-app-https-redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.photoprism-app.middlewares=photoprism-app-https-redirect'
+      - 'traefik.http.routers.photoprism-app-secure.entrypoints=https'
+      - 'traefik.http.routers.photoprism-app-secure.rule=Host($(${BASE_HOST_NAME:-$HOSTNAME}))'
+      - 'traefik.http.routers.photoprism-app-secure.tls.certresolver=cloudflare'
+      - 'traefik.http.routers.photoprism-app-secure.service=photoprism-app'
+      - 'traefik.http.services.photoprism-app.loadbalancer.server.port=2342'
 
   photoprism-db:
     image: mariadb:latest
@@ -68,6 +88,7 @@ services:
       MARIADB_USER: ${DB_USER_NAME:-photoprism}
       MARIADB_PASSWORD: ${DB_USER_PASS:-changeme_db_password}
       MARIADB_ROOT_PASSWORD: ${DB_ADMIN_PASS:-changeme_admin_password}
+      CONTAINER_NAME: photoprism-db
     volumes:
       - ./volumes/data/db/mariadb/photoprism:/var/lib/mysql
     command: --innodb-buffer-pool-size=512M --transaction-isolation=READ-COMMITTED --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --max-connections=512 --innodb-rollback-on-timeout=OFF --innodb-lock-wait-timeout=120
@@ -80,3 +101,7 @@ services:
 networks:
   photoprism:
     external: false
+  proxy:
+    external: true
+  cloudflare:
+    external: true
