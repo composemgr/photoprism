@@ -118,6 +118,7 @@ compose.default.yaml
 compose.yml
 compose.yaml
 
-# Exclude the rootfs dir
+# Exclude the rootfs and volumes directories
 rootfs
+volumes
 
